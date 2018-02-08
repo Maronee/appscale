@@ -26,6 +26,8 @@ if [ -z "${JAVA_HOME_DIRECTORY-}" ]; then
         export JAVA_HOME_DIRECTORY=/usr/lib/jvm/${JAVA_VERSION}-amd64
     elif [ "$UNAME_MACHINE" = "armv7l" ] || [ "$UNAME_MACHINE" = "armv6l" ]; then
         export JAVA_HOME_DIRECTORY=/usr/lib/jvm/${JAVA_VERSION}-armhf
+    elif [ "$UNAME_MACHINE" = "s390x" ]; then
+	export JAVA_HOME_DIRECTORY=/usr/lib/jvm/${JAVA_VERSION}-s390x 
     fi
 fi
 
@@ -305,26 +307,26 @@ installgems()
     gem install httparty ${GEMOPT} -v 0.14.0
     gem install httpclient ${GEMOPT}
 
-    if [ "${UNAME_MACHINE}" = "x86_64" ]; then
-       	gem install posixpsutil ${GEMOPT}
-    else
+    if [ "${UNAME_MACHINE}" = "s390x" ]; then
         # Posixputil bugged while gabbing it. Manually building it and installing FFI
         CUSTOM_PPS_UTIL="posixpsutil-0.1.0-s390x-linux.gem"
 
 	apt install libffi-dev
 	gem inst ffi
 		
-	if [${PACKAGE_CACHE}/${CUSTOM_PPS_UTIL}]
-		if [$(md5sum ${PACKAGE_CACHE}/${CUSTOM_PPS_UTIL}) -eq da71539d4f226887f0392ac43e78ede9 ]
-			 gem install --local ${PACKAGE_CACHE}/${CUSTOM_PPS_UTIL}
-		
-	else
-		git clone https://github.com/spacewander/posixpsutil
-		cd posixpsutil
-		gem build posixpsutil.gemspec && gem install --local posixpsutil*.gem
-		cd ..
-		rm -rf posixpsutil
+	if [${PACKAGE_CACHE}/${CUSTOM_PPS_UTIL}]; then
+		if ["$(md5sum ${PACKAGE_CACHE}/${CUSTOM_PPS_UTIL})" = "da71539d4f226887f0392ac43e78ede9" ]; then
+			 gem install --local ${PACKAGE_CACHE}/${CUSTOM_PPS_UTIL}		
+		else
+			git clone https://github.com/spacewander/posixpsutil
+			cd posixpsutil
+			gem build posixpsutil.gemspec && gem install --local posixpsutil*.gem
+			cd ..
+			rm -rf posixpsutil
+		fi
 	fi
+    else
+      	gem install posixpsutil ${GEMOPT}
     fi
  
     # This is for the unit testing framework.
