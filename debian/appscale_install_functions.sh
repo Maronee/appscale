@@ -304,7 +304,29 @@ installgems()
     gem install soap4r-ng ${GEMOPT}
     gem install httparty ${GEMOPT} -v 0.14.0
     gem install httpclient ${GEMOPT}
-    gem install posixpsutil ${GEMOPT}
+
+    if [ "${UNAME_MACHINE}" = "x86_64" ]; then
+       	gem install posixpsutil ${GEMOPT}
+    else
+        # Posixputil bugged while gabbing it. Manually building it and installing FFI
+        CUSTOM_PPS_UTIL="posixpsutil-0.1.0-s390x-linux.gem"
+
+	apt install libffi-dev
+	gem inst ffi
+		
+	if [${PACKAGE_CACHE}/${CUSTOM_PPS_UTIL}]
+		if [$(md5sum ${PACKAGE_CACHE}/${CUSTOM_PPS_UTIL}) -eq da71539d4f226887f0392ac43e78ede9 ]
+			 gem install --local ${PACKAGE_CACHE}/${CUSTOM_PPS_UTIL}
+		
+	else
+		git clone https://github.com/spacewander/posixpsutil
+		cd posixpsutil
+		gem build posixpsutil.gemspec && gem install --local posixpsutil*.gem
+		cd ..
+		rm -rf posixpsutil
+	fi
+    fi
+ 
     # This is for the unit testing framework.
     gem install simplecov ${GEMOPT}
 }
