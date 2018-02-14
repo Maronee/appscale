@@ -176,7 +176,7 @@ case "$PROVIDER" in
         ADMIN_PASSWD="$(cat /etc/hostname)"
     fi
     ;;
-"VirtualBox")
+VirtualBox|Docker)
     # Let's discover the device used for external communication. In
     # Vagrant this should not be used!
     DEFAULT_DEV="$($IP route list scope global | sed 's/.*dev \b\([A-Za-z0-9_]*\).*/\1/' | uniq)"
@@ -216,7 +216,12 @@ esac
 # Let's make sure we don't overwrite and existing AppScalefile.
 if [ ! -e AppScalefile ]; then
     # Let's make sure we detected the IPs.
-    [ -z "$PUBLIC_IP" ] && { echo "Cannot get public IP of instance!" ; exit 1 ; }
+       
+    if [ "${FORCE_PRIVATE}" = "Y" ]; then
+       PUBLIC_IP="unavailable"
+    else
+       [ -z "$PUBLIC_IP" ] && { echo "Cannot get public IP of instance!" ; exit 1 ; }
+    fi
     [ -z "$PRIVATE_IP" ] && { echo "Cannot get private IP of instance!" ; exit 1 ; }
 
     # Tell the user what we detected.
