@@ -26,8 +26,8 @@ def start_cassandra():
   bash = find_executable('bash')
   su = find_executable('su')
 
-  cassandra_cmd = ' '.join([CASSANDRA_EXECUTABLE, '-p', PID_FILE])
-  start_cmd = "{} -c '{}' cassandra".format(su, cassandra_cmd)
+  cassandra_cmd = ' '.join([CASSANDRA_EXECUTABLE, '-R -p', PID_FILE])
+  start_cmd = "{} -c '{}' cassandra".format(bash, cassandra_cmd)
   stop_cmd = "{} -c 'kill $(cat {})'".format(bash, PID_FILE)
 
   watch = datastore_upgrade.CASSANDRA_WATCH_NAME

@@ -320,7 +320,7 @@ installgems()
 		else
 			git clone https://github.com/spacewander/posixpsutil
 			cd posixpsutil
-			gem build posixpsutil.gemspec && gem install --local posixpsutil*.gem
+			gem build posixpsutil.gemspec && gem install --local posixpsutil-0.1.0-s390x-linux.gem
 			cd ..
 			rm -rf posixpsutil
 		fi
